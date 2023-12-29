@@ -46,7 +46,7 @@ The script generates the following metrics:
 | `snapraid_sync_completion_percent` | Completion percentage of the SnapRAID Sync operation. |
 | `snapraid_sync_accessed_mb` | Amount of data accessed during the operation, in MB. |
 | `snapraid_sync_verify_duration_seconds` | Time taken to verify each path during SnapRAID Sync, in seconds. |
-| `snapraid_scrub_elast_successful` | (Optional) Timestamp of the last successful SnapRAID Scrub, only on the specified day. |
+| `snapraid_scrub_last_successful` | (Optional) Timestamp of the last successful SnapRAID Scrub, only on the specified day. |
 
 
 ## Alerts

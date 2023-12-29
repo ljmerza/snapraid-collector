@@ -121,8 +121,8 @@ if [ "$today" = "$dayArg" ]; then
       # Get the current timestamp
       currentTimestamp=$(date +%s)
       # Output the metric
-      echo "# HELP snapraid_scrub_last_successful_scrub Timestamp of the last successful SnapRAID scrub"
-      echo "# TYPE snapraid_scrub_last_successful_scrub gauge"
+      echo "# HELP snapraid_scrub_last_successful Timestamp of the last successful SnapRAID scrub"
+      echo "# TYPE snapraid_scrub_last_successful gauge"
       echo "snapraid_scrub_last_successful $currentTimestamp"
   fi
 fi
