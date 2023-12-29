@@ -37,12 +37,38 @@ The script generates the following metrics:
 
 | Metric | Description |
 | ------ | ----------- |
-| `snapraid_disk_fail_probability` | Fail probability for individual disks within the next year based on SMART values calculated by SnapRAID. |
-| `snapraid_total_fail_probability` | Fail probability for any disk failing within the next year. |
-| `snapraid_file_errors` | Number of file errors found during SnapRAID Sync. |
-| `snapraid_io_errors` | Number of I/O errors found during SnapRAID Sync. |
-| `snapraid_data_errors` | Number of data errors found during SnapRAID Sync. |
-| `snapraid_completion_percent` | Completion percentage of the SnapRAID Sync operation. |
-| `snapraid_accessed_mb` | Amount of data accessed during the operation, in MB. |
-| `snapraid_verify_duration_seconds` | Time taken to verify each path during SnapRAID Sync, in seconds. |
-| `snapraid_scrub_errors` | (Optional) Number of errors found during SnapRAID Scrub, only on the specified day. |
+| `snapraid_smart_disk_fail_probability` | Fail probability for individual disks within the next year based on SMART values calculated by SnapRAID. |
+| `snapraid_smart_total_fail_probability` | Fail probability for any disk failing within the next year. |
+| `snapraid_sync_file_errors` | Number of file errors found during SnapRAID Sync. |
+| `snapraid_sync_io_errors` | Number of I/O errors found during SnapRAID Sync. |
+| `snapraid_sync_data_errors` | Number of data errors found during SnapRAID Sync. |
+| `snapraid_sync_last_successful` | (Optional) Timestamp of the last successful SnapRAID Sync, only on the specified day. |
+| `snapraid_sync_completion_percent` | Completion percentage of the SnapRAID Sync operation. |
+| `snapraid_sync_accessed_mb` | Amount of data accessed during the operation, in MB. |
+| `snapraid_sync_verify_duration_seconds` | Time taken to verify each path during SnapRAID Sync, in seconds. |
+| `snapraid_scrub_elast_successful` | (Optional) Timestamp of the last successful SnapRAID Scrub, only on the specified day. |
+
+
+## Alerts
+
+```bash
+- name: Disk Alerts
+  rules:
+    - alert: Snapraid Disk Failure Probability
+      expr: snapraid_sync_disk_fail_probability > 15
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: Snapraid Disk Failure on {{ $labels.instance }} - {{ $labels.job }}
+        description: "Snapraid Disk Failure (current value: {{ $value }})"
+
+    - alert: Snapraid Total Failure Probability
+      expr: snapraid_sync_total_fail_probability > 40
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: Snapraid Total Failure on {{ $labels.instance }} - {{ $labels.job }}
+        description: "Snapraid Total Failure (current value: {{ $value }})"
+```
