@@ -12,10 +12,17 @@ This script collects various metrics from SnapRAID operations like `sync` and `s
 To run the script, use the following command:
 
 ```bash
-sudo ./snapraid_metrics_collector.sh <day-of-week>
+sudo ./snapraid_metrics_collector.sh [smart|scrub|sync]
 ```
 
-Replace <day-of-week> with the desired day (e.g., Sun, Mon, Tue, etc.) to execute scrub-specific commands.
+You can specify one or more arguments to execute specific operations. For example:
+
+```bash
+sudo ./snapraid_metrics_collector.sh smart # to run the smart operation.
+sudo ./snapraid_metrics_collector.sh scrub # to run the scrub operation.
+sudo ./snapraid_metrics_collector.sh sync # to run the sync operation.
+sudo ./snapraid_metrics_collector.sh smart sync # to run both smart and sync operations.
+```
 
 ## Integration with Prometheus Node Exporter
 
@@ -26,7 +33,13 @@ Make it executable: `chmod +x /usr/local/bin/snapraid_metrics_collector.sh.`
 Configure a cron job to run the script periodically and output to a textfile collector directory:
 
 ```bash
-* * * * * /usr/local/bin/snapraid_metrics_collector.sh Sun > /var/lib/node_exporter/textfile_collector/snapraid.prom
+# Run snapraid sync every day at 1 AM
+0 1 * * * /usr/local/bin/snapraid_metrics_collector.sh sync > /var/lib/node_exporter/textfile_collector/snapraid_sync.prom
+# Run snapraid scrub once a week on Sunday at 3 AM
+0 3 * * Sun /usr/local/bin/snapraid_metrics_collector.sh scrub > /var/lib/node_exporter/textfile_collector/snapraid_scrub.prom
+# Run snapraid smart every day at 5 AM
+0 5 * * * /usr/local/bin/snapraid_metrics_collector.sh smart > /var/lib/node_exporter/textfile_collector/snapraid_smart.prom
+
 ```
 
 Adjust the cron schedule according to your requirements.
@@ -39,14 +52,24 @@ The script generates the following metrics:
 | ------ | ----------- |
 | `snapraid_smart_disk_fail_probability` | Fail probability for individual disks within the next year based on SMART values calculated by SnapRAID. |
 | `snapraid_smart_total_fail_probability` | Fail probability for any disk failing within the next year. |
+| `snapraid_smart_last_successful` | (Optional) Timestamp of the last successful SnapRAID Smart |
+| - | - |
+| `snapraid_sync_last_successful` | (Optional) Timestamp of the last successful SnapRAID Scrub |
+| `snapraid_sync_verify_duration` | Time taken to verify each path during SnapRAID Sync, in seconds. |
 | `snapraid_sync_file_errors` | Number of file errors found during SnapRAID Sync. |
 | `snapraid_sync_io_errors` | Number of I/O errors found during SnapRAID Sync. |
 | `snapraid_sync_data_errors` | Number of data errors found during SnapRAID Sync. |
-| `snapraid_sync_last_successful` | (Optional) Timestamp of the last successful SnapRAID Sync, only on the specified day. |
+| `snapraid_sync_last_successful` | (Optional) Timestamp of the last successful SnapRAID Sync |
 | `snapraid_sync_completion_percent` | Completion percentage of the SnapRAID Sync operation. |
 | `snapraid_sync_accessed_mb` | Amount of data accessed during the operation, in MB. |
-| `snapraid_sync_verify_duration_seconds` | Time taken to verify each path during SnapRAID Sync, in seconds. |
-| `snapraid_scrub_last_successful` | (Optional) Timestamp of the last successful SnapRAID Scrub, only on the specified day. |
+| - | - |
+| `snapraid_scrub_last_successful` | (Optional) Timestamp of the last successful SnapRAID Scrub |
+| `snapraid_scrub_verify_duration` | Time taken to verify each path during SnapRAID Scrub, in seconds. |
+| `snapraid_scrub_file_errors` | Number of file errors found during SnapRAID Scrub. |
+| `snapraid_scrub_io_errors` | Number of I/O errors found during SnapRAID Scrub. |
+| `snapraid_scrub_data_errors` | Number of data errors found during SnapRAID Scrub. |
+| `snapraid_scrub_completion_percent` | Completion percentage of the SnapRAID Scrub operation. |
+| `snapraid_scrub_accessed_mb` | Amount of data accessed during the operation, in MB. |
 
 
 ## Alerts
