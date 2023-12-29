@@ -1,6 +1,6 @@
 # SnapRAID Metrics Collector
 
-This script collects various metrics from SnapRAID operations like `sync` and `scrub` and outputs them in a format compatible with Prometheus's textfile collector.
+This script collects various metrics from SnapRAID operations like `sync`, `scrub`, and `smart` and outputs them in a format compatible with Prometheus's textfile collector.
 
 ## Prerequisites
 
