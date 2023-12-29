@@ -26,7 +26,7 @@ Make it executable: `chmod +x /usr/local/bin/snapraid_metrics_collector.sh.`
 Configure a cron job to run the script periodically and output to a textfile collector directory:
 
 ```bash
-* * * * * /usr/local/bin/snapraid_metrics_collector.sh <day-of-week> > /var/lib/node_exporter/textfile_collector/snapraid.prom
+* * * * * /usr/local/bin/snapraid_metrics_collector.sh Sun > /var/lib/node_exporter/textfile_collector/snapraid.prom
 ```
 
 Adjust the cron schedule according to your requirements.
