@@ -44,6 +44,21 @@ Configure a cron job to run the script periodically and output to a textfile col
 
 Adjust the cron schedule according to your requirements.
 
+Configure Node Exporter to read metrics from this directory. This is usually done by passing the --collector.textfile.directory flag to Node Exporter with the path to the directory. Modify the Node Exporter service file accordingly.
+
+For example, if you are using a systemd service to manage Node Exporter, edit the service file (typically located at /etc/systemd/system/node_exporter.service or /lib/systemd/system/node_exporter.service) and add the flag to the ExecStart line:
+
+```yaml
+ExecStart=/usr/local/bin/node_exporter --collector.textfile.directory=/var/lib/node_exporter/textfile_collector
+```
+
+After modifying the service file, reload the systemd configuration and restart the Node Exporter service:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart node_exporter
+```
+
 ## Metrics
 
 The script generates the following metrics:
