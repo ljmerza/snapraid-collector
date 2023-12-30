@@ -67,18 +67,17 @@ The script generates the following metrics:
 | ------ | ----------- |
 | `snapraid_smart_disk_fail_probability` | Fail probability for individual disks within the next year based on SMART values calculated by SnapRAID. |
 | `snapraid_smart_total_fail_probability` | Fail probability for any disk failing within the next year. |
-| `snapraid_smart_last_successful` | (Optional) Timestamp of the last successful SnapRAID Smart |
+| `snapraid_smart_last_successful` | Timestamp of the last successful SnapRAID Smart |
 | - | - |
-| `snapraid_sync_last_successful` | (Optional) Timestamp of the last successful SnapRAID Scrub |
+| `snapraid_sync_last_successful` | Timestamp of the last successful SnapRAID Scrub |
 | `snapraid_sync_verify_duration` | Time taken to verify each path during SnapRAID Sync, in seconds. |
 | `snapraid_sync_file_errors` | Number of file errors found during SnapRAID Sync. |
 | `snapraid_sync_io_errors` | Number of I/O errors found during SnapRAID Sync. |
 | `snapraid_sync_data_errors` | Number of data errors found during SnapRAID Sync. |
-| `snapraid_sync_last_successful` | (Optional) Timestamp of the last successful SnapRAID Sync |
 | `snapraid_sync_completion_percent` | Completion percentage of the SnapRAID Sync operation. |
 | `snapraid_sync_accessed_mb` | Amount of data accessed during the operation, in MB. |
 | - | - |
-| `snapraid_scrub_last_successful` | (Optional) Timestamp of the last successful SnapRAID Scrub |
+| `snapraid_scrub_last_successful` | Timestamp of the last successful SnapRAID Scrub |
 | `snapraid_scrub_verify_duration` | Time taken to verify each path during SnapRAID Scrub, in seconds. |
 | `snapraid_scrub_file_errors` | Number of file errors found during SnapRAID Scrub. |
 | `snapraid_scrub_io_errors` | Number of I/O errors found during SnapRAID Scrub. |
