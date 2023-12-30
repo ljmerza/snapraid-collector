@@ -94,8 +94,6 @@ extract_error_metrics() {
   local snapraidOutput="$1"
   local metricSuffix="$2"
 
-  local fileErrors ioErrors dataErrors completionPercent accessedMB
-
   fileErrors=$(echo "$snapraidOutput" | grep "file errors" | awk '{print $1}')
   fileErrors=${fileErrors:-0} # Default to 0 if not found
 
@@ -104,10 +102,6 @@ extract_error_metrics() {
 
   dataErrors=$(echo "$snapraidOutput" | grep "data errors" | awk '{print $1}')
   dataErrors=${dataErrors:-0} # Default to 0 if not found
-
-  local completedLine=$(echo "$snapraidOutput" | grep "completed")
-  completionPercent=$(echo "$completedLine" | awk '{print $1}' | tr -d '%')
-  accessedMB=$(echo "$completedLine" | awk '{print $3}')
 
   echo "# HELP snapraid_${metricSuffix}_file_errors Number of file errors found during SnapRAID ${metricSuffix}"
   echo "# TYPE snapraid_${metricSuffix}_file_errors gauge"
@@ -118,6 +112,16 @@ extract_error_metrics() {
   echo "# HELP snapraid_${metricSuffix}_data_errors Number of data errors found during SnapRAID ${metricSuffix}"
   echo "# TYPE snapraid_${metricSuffix}_data_errors gauge"
   echo "snapraid_${metricSuffix}_data_errors $dataErrors"
+}
+
+extract_completion_metrics() {
+  local snapraidOutput="$1"
+  local metricSuffix="$2"
+
+  completedLine=$(echo "$snapraidOutput" | grep "completed")
+  completionPercent=$(echo "$completedLine" | awk '{print $1}' | tr -d '%')
+  accessedMB=$(echo "$completedLine" | awk -F, '{print $2}' | awk '{print $1}')
+
   echo "# HELP snapraid_${metricSuffix}_completion_percent Completion percentage of the operation during SnapRAID ${metricSuffix}"
   echo "# TYPE snapraid_${metricSuffix}_completion_percent gauge"
   echo "snapraid_${metricSuffix}_completion_percent $completionPercent"
@@ -137,12 +141,14 @@ for arg in "$@"; do
       extract_scan_metrics "$snapraidScrubOutput" "scrub"
       extract_base_metrics "$snapraidScrubOutput" "scrub"
       extract_error_metrics "$snapraidScrubOutput" "scrub"
+      extract_completion_metrics "$snapraidScrubOutput" "scrub"
       ;;
     sync)
       snapraidSyncOutput=$(sudo snapraid --force-zero sync)
       extract_scan_metrics "$snapraidSyncOutput" "sync"
       extract_base_metrics "$snapraidSyncOutput" "sync"
       extract_error_metrics "$snapraidSyncOutput" "sync"
+      extract_completion_metrics "$snapraidSyncOutput" "sync"
       ;;
     *)
       echo "Invalid argument: $arg"
