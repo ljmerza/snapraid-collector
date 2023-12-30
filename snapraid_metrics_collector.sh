@@ -15,8 +15,6 @@ if [ "$#" -lt 1 ]; then
   exit 1
 fi
 
-
-# snapraid smart metrics
 run_snapraid_smart() {
   snapraidSmartOutput=$(snapraid smart)
   smartExitStatus=$?
@@ -52,8 +50,50 @@ run_snapraid_smart() {
   echo "snapraid_smart_total_fail_probability $tfp"
 }
 
+extract_scan_metrics() {
+  local snapraidOutput="$1"
+  local metricSuffix="$2"
+
+  local itemName scanTime
+  declare -A scanMetrics
+
+  while read -r line; do
+    if [[ "$line" == Scanned* ]]; then
+      itemName=$(echo "$line" | awk '{print $2}')
+      scanTime=$(echo "$line" | awk '{print $4}')
+      scanMetrics["$itemName"]=$scanTime
+    fi
+  done <<< "$snapraidOutput"
+
+  echo "# HELP snapraid_${metricSuffix}_scan_time_seconds Scan time for each item in seconds for SnapRAID ${metricSuffix}."
+  echo "# TYPE snapraid_${metricSuffix}_scan_time_seconds gauge"
+  for item in "${!scanMetrics[@]}"; do
+    echo "snapraid_${metricSuffix}_scan_time_seconds{disk=\"$item\"} ${scanMetrics[$item]}"
+  done
+}
+
+extract_base_metrics() {
+  local snapraidOutput="$1"
+  local metricSuffix="$2"
+
+  currentTimestamp=$(date +%s)
+  echo "# HELP snapraid_${metricSuffix}_last_successful Timestamp of the last successful SnapRAID ${metricSuffix}"
+  echo "# TYPE snapraid_${metricSuffix}_last_successful gauge"
+  echo "snapraid_${metricSuffix}_last_successful $currentTimestamp"
+
+  echo "# HELP snapraid_${metricSuffix}_verify_duration Time taken to verify each path in seconds"
+  echo "# TYPE snapraid_${metricSuffix}_verify_duration gauge"
+  echo "$snapraidSyncOutput" | grep "^Verified" | while read -r line; do
+      path=$(echo "$line" | awk '{print $2}')
+      seconds=$(echo "$line" | awk '{print $4}')
+      echo "snapraid_${metricSuffix}_verify_duration{path=\"$path\"} $seconds"
+  done
+}
+
 extract_error_metrics() {
   local snapraidOutput="$1"
+  local metricSuffix="$2"
+
   local fileErrors ioErrors dataErrors completionPercent accessedMB
 
   fileErrors=$(echo "$snapraidOutput" | grep "file errors" | awk '{print $1}')
@@ -69,81 +109,21 @@ extract_error_metrics() {
   completionPercent=$(echo "$completedLine" | awk '{print $1}' | tr -d '%')
   accessedMB=$(echo "$completedLine" | awk '{print $3}')
 
-  echo "$fileErrors $ioErrors $dataErrors $completionPercent $accessedMB"
-}
-
-run_snapraid_sync() {
-  snapraidSyncOutput=$(sudo snapraid --force-zero sync)
-  syncExitStatus=$?
-
-  if [ $syncExitStatus -eq 0 ]; then
-      currentTimestamp=$(date +%s)
-      echo "# HELP snapraid_sync_last_successful Timestamp of the last successful SnapRAID sync"
-      echo "# TYPE snapraid_sync_last_successful gauge"
-      echo "snapraid_sync_last_successful $currentTimestamp"
-  fi
-
-  echo "$snapraidSyncOutput" | grep "^Verified" | while read -r line; do
-      path=$(echo "$line" | awk '{print $2}')
-      seconds=$(echo "$line" | awk '{print $4}')
-      echo "# HELP snapraid_sync_verify_duration Time taken to verify each path in seconds"
-      echo "# TYPE snapraid_sync_verify_duration gauge"
-      echo "snapraid_sync_verify_duration{path=\"$path\"} $seconds"
-  done
-
-  read fileErrors ioErrors dataErrors completionPercent accessedMB <<< $(extract_error_metrics "$snapraidSyncOutput")
-  echo "# HELP snapraid_sync_file_errors Number of file errors found during SnapRAID Sync"
-  echo "# TYPE snapraid_sync_file_errors gauge"
-  echo "snapraid_sync_file_errors $fileErrors"
-  echo "# HELP snapraid_sync_io_errors Number of I/O errors found during SnapRAID Sync"
-  echo "# TYPE snapraid_sync_io_errors gauge"
-  echo "snapraid_sync_io_errors $ioErrors"
-  echo "# HELP snapraid_sync_data_errors Number of data errors found during SnapRAID Sync"
-  echo "# TYPE snapraid_sync_data_errors gauge"
-  echo "snapraid_sync_data_errors $dataErrors"
-  echo "# HELP snapraid_sync_completion_percent Completion percentage of the operation during SnapRAID Sync"
-  echo "# TYPE snapraid_sync_completion_percent gauge"
-  echo "snapraid_sync_completion_percent $completionPercent"
-  echo "# HELP snapraid_sync_accessed_mb Amount of data accessed in MB during SnapRAID Sync"
-  echo "# TYPE snapraid_sync_accessed_mb gauge"
-  echo "snapraid_sync_accessed_mb $accessedMB"
-}
-
-run_snapraid_scrub() {
-  snapraidScrubOutput=$(snapraid scrub)
-  scrubExitStatus=$?
-
-  if [ $scrubExitStatus -eq 0 ]; then
-      currentTimestamp=$(date +%s)
-      echo "# HELP snapraid_scrub_last_successful Timestamp of the last successful SnapRAID scrub"
-      echo "# TYPE snapraid_scrub_last_successful gauge"
-      echo "snapraid_scrub_last_successful $currentTimestamp"
-  fi
-
-  echo "$snapraidScrubOutput" | grep "^Verified" | while read -r line; do
-      path=$(echo "$line" | awk '{print $2}')
-      seconds=$(echo "$line" | awk '{print $4}')
-      echo "# HELP snapraid_scrub_verify_duration Time taken to verify each path in seconds"
-      echo "# TYPE snapraid_scrub_verify_duration gauge"
-      echo "snapraid_scrub_verify_duration{path=\"$path\"} $seconds"
-  done
-
-  read fileErrors ioErrors dataErrors completionPercent accessedMB <<< $(extract_error_metrics "$snapraidScrubOutput")
-  echo "# HELP snapraid_scrub_file_errors Number of file errors found during SnapRAID Scrub"
-  echo "# TYPE snapraid_scrub_file_errors gauge"
-  echo "snapraid_scrub_file_errors $fileErrors"
-  echo "# HELP snapraid_scrub_io_errors Number of I/O errors found during SnapRAID Scrub"
-  echo "# TYPE snapraid_scrub_io_errors gauge"
-  echo "snapraid_scrub_io_errors $ioErrors"
-  echo "# HELP snapraid_scrub_data_errors Number of data errors found during SnapRAID Scrub"
-  echo "# TYPE snapraid_scrub_data_errors gauge"
-  echo "snapraid_scrub_data_errors $dataErrors"
-  echo "# HELP snapraid_scrub_completion_percent Completion percentage of the operation during SnapRAID Scrub"
-  echo "# TYPE snapraid_scrub_completion_percent gauge"
-  echo "snapraid_scrub_completion_percent $completionPercent"
-  echo "# HELP snapraid_scrub_accessed_mb Amount of data accessed in MB during SnapRAID Scrub"
-  echo "# TYPE snapraid_scrub_accessed_mb gauge"
-  echo "snapraid_scrub_accessed_mb $accessedMB"
+  echo "# HELP snapraid_${metricSuffix}_file_errors Number of file errors found during SnapRAID ${metricSuffix}"
+  echo "# TYPE snapraid_${metricSuffix}_file_errors gauge"
+  echo "snapraid_${metricSuffix}_file_errors $fileErrors"
+  echo "# HELP snapraid_${metricSuffix}_io_errors Number of I/O errors found during SnapRAID ${metricSuffix}"
+  echo "# TYPE snapraid_${metricSuffix}_io_errors gauge"
+  echo "snapraid_${metricSuffix}_io_errors $ioErrors"
+  echo "# HELP snapraid_${metricSuffix}_data_errors Number of data errors found during SnapRAID ${metricSuffix}"
+  echo "# TYPE snapraid_${metricSuffix}_data_errors gauge"
+  echo "snapraid_${metricSuffix}_data_errors $dataErrors"
+  echo "# HELP snapraid_${metricSuffix}_completion_percent Completion percentage of the operation during SnapRAID ${metricSuffix}"
+  echo "# TYPE snapraid_${metricSuffix}_completion_percent gauge"
+  echo "snapraid_${metricSuffix}_completion_percent $completionPercent"
+  echo "# HELP snapraid_${metricSuffix}_accessed_mb Amount of data accessed in MB during SnapRAID ${metricSuffix}"
+  echo "# TYPE snapraid_${metricSuffix}_accessed_mb gauge"
+  echo "snapraid_${metricSuffix}_accessed_mb $accessedMB"
 }
 
 # Iterate over all arguments
@@ -153,10 +133,16 @@ for arg in "$@"; do
       run_snapraid_smart
       ;;
     scrub)
-      run_snapraid_scrub
+      snapraidScrubOutput=$(sudo snapraid scrub)
+      extract_scan_metrics "$snapraidScrubOutput" "scrub"
+      extract_base_metrics "$snapraidScrubOutput" "scrub"
+      extract_error_metrics "$snapraidScrubOutput" "scrub"
       ;;
     sync)
-      run_snapraid_sync
+      snapraidSyncOutput=$(sudo snapraid --force-zero sync)
+      extract_scan_metrics "$snapraidSyncOutput" "sync"
+      extract_base_metrics "$snapraidSyncOutput" "sync"
+      extract_error_metrics "$snapraidSyncOutput" "sync"
       ;;
     *)
       echo "Invalid argument: $arg"
