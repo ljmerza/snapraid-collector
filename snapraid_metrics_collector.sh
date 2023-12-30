@@ -15,17 +15,23 @@ if [ "$#" -lt 1 ]; then
   exit 1
 fi
 
-run_snapraid_smart() {
-  snapraidSmartOutput=$(snapraid smart)
-  smartExitStatus=$?
+extract_status_metrics(){
+  local metricSuffix="$1"
+  local exitStatus="$2"
 
-  if [ $smartExitStatus -eq 0 ]; then
+  echo "# HELP snapraid_${metricSuffix}_exit_status Exit status of the last SnapRAID ${metricSuffix} run"
+  echo "# TYPE snapraid_${metricSuffix}_exit_status gauge"
+  echo "snapraid_${metricSuffix}_exit_status $exitStatus"
+
+  if [ $exitStatus -eq 0 ]; then
       currentTimestamp=$(date +%s)
-      echo "# HELP snapraid_smart_last_successful Timestamp of the last successful SnapRAID sync"
-      echo "# TYPE snapraid_smart_last_successful gauge"
-      echo "snapraid_smart_last_successful $currentTimestamp"
+      echo "# HELP snapraid_${metricSuffix}_last_successful Timestamp of the last successful SnapRAID ${metricSuffix} run"
+      echo "# TYPE snapraid_${metricSuffix}_last_successful gauge"
+      echo "snapraid_${metricSuffix}_last_successful $currentTimestamp"
   fi
+}
 
+extract_snapraid_smart() {
   resultTable="$(echo "$snapraidSmartOutput" | tail -n +6 | head -n -5)"
   disks=$(echo "$resultTable" | awk '{print $7}' | sort | xargs)
   echo "# HELP snapraid_smart_disk_fail_probability fail probability for individual failing disk within the next year based on SMART values calculated by snapraid"
@@ -134,10 +140,17 @@ extract_completion_metrics() {
 for arg in "$@"; do
   case $arg in
     smart)
-      run_snapraid_smart
+      snapraidSmartOutput=$(snapraid smart)
+      exitStatus=$?
+      extract_status_metrics "smart" "$exitStatus"
+      echo "$snapraidSmartOutput" > smart.log
+      extract_snapraid_smart "$snapraidSmartOutput"
       ;;
     scrub)
       snapraidScrubOutput=$(sudo snapraid scrub)
+      exitStatus=$?
+      extract_status_metrics "scrub" "$exitStatus"
+      echo "$snapraidScrubOutput" > scrub.log
       extract_scan_metrics "$snapraidScrubOutput" "scrub"
       extract_base_metrics "$snapraidScrubOutput" "scrub"
       extract_error_metrics "$snapraidScrubOutput" "scrub"
@@ -145,6 +158,9 @@ for arg in "$@"; do
       ;;
     sync)
       snapraidSyncOutput=$(sudo snapraid --force-zero sync)
+      exitStatus=$?
+      extract_status_metrics "sync" "$exitStatus"
+      echo "$snapraidSyncOutput" > sync.log
       extract_scan_metrics "$snapraidSyncOutput" "sync"
       extract_base_metrics "$snapraidSyncOutput" "sync"
       extract_error_metrics "$snapraidSyncOutput" "sync"

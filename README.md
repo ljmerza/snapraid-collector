@@ -65,27 +65,31 @@ The script generates the following metrics:
 
 | Metric Name                                 | Description |
 | ------------------------------------------- | ----------- |
-| `snapraid_smart_last_successful`            | Timestamp of the last successful SnapRAID SMART operation. |
+| `snapraid_smart_exit_status`                | Exit status of the last SnapRAID smart run. |
+| `snapraid_smart_last_successful`            | Timestamp of the last successful SnapRAID smart run. |
 | `snapraid_smart_disk_fail_probability`      | Fail probability for individual disks within the next year based on SMART values calculated by SnapRAID. |
 | `snapraid_smart_total_fail_probability`     | Fail probability for any disk failing within the next year based on SMART values calculated by SnapRAID. |
 | -                                           | -           |
-| `snapraid_sync_scan_time_seconds`           | Scan time for each item during SnapRAID Sync operation, in seconds. |
-| `snapraid_sync_last_successful`             | Timestamp of the last successful SnapRAID Sync operation. |
-| `snapraid_sync_verify_duration`             | Time taken to verify each path during SnapRAID Sync, in seconds. |
-| `snapraid_sync_file_errors`                 | Number of file errors found during SnapRAID Sync. |
-| `snapraid_sync_io_errors`                   | Number of I/O errors found during SnapRAID Sync. |
-| `snapraid_sync_data_errors`                 | Number of data errors found during SnapRAID Sync. |
-| `snapraid_sync_completion_percent`          | Completion percentage of the SnapRAID Sync operation. |
-| `snapraid_sync_accessed_mb`                 | Amount of data accessed during the SnapRAID Sync operation, in MB. |
+| `snapraid_scrub_exit_status`                | Exit status of the last SnapRAID scrub run. |
+| `snapraid_scrub_last_successful`            | Timestamp of the last successful SnapRAID scrub run. |
+| `snapraid_scrub_scan_time_seconds`          | Scan time for each item during SnapRAID scrub operation, in seconds. |
+| `snapraid_scrub_verify_duration`            | Time taken to verify each path during SnapRAID scrub, in seconds. |
+| `snapraid_scrub_file_errors`                | Number of file errors found during SnapRAID scrub. |
+| `snapraid_scrub_io_errors`                  | Number of I/O errors found during SnapRAID scrub. |
+| `snapraid_scrub_data_errors`                | Number of data errors found during SnapRAID scrub. |
+| `snapraid_scrub_completion_percent`         | Completion percentage of the SnapRAID scrub operation. |
+| `snapraid_scrub_accessed_mb`                | Amount of data accessed during the SnapRAID scrub operation, in MB. |
 | -                                           | -           |
-| `snapraid_scrub_scan_time_seconds`          | Scan time for each item during SnapRAID Scrub operation, in seconds. |
-| `snapraid_scrub_last_successful`            | Timestamp of the last successful SnapRAID Scrub operation. |
-| `snapraid_scrub_verify_duration`            | Time taken to verify each path during SnapRAID Scrub, in seconds. |
-| `snapraid_scrub_file_errors`                | Number of file errors found during SnapRAID Scrub. |
-| `snapraid_scrub_io_errors`                  | Number of I/O errors found during SnapRAID Scrub. |
-| `snapraid_scrub_data_errors`                | Number of data errors found during SnapRAID Scrub. |
-| `snapraid_scrub_completion_percent`         | Completion percentage of the SnapRAID Scrub operation. |
-| `snapraid_scrub_accessed_mb`                | Amount of data accessed during the SnapRAID Scrub operation, in MB. |
+| `snapraid_sync_exit_status`                 | Exit status of the last SnapRAID sync run. |
+| `snapraid_sync_last_successful`             | Timestamp of the last successful SnapRAID sync run. |
+| `snapraid_sync_scan_time_seconds`           | Scan time for each item during SnapRAID sync operation, in seconds. |
+| `snapraid_sync_verify_duration`             | Time taken to verify each path during SnapRAID sync, in seconds. |
+| `snapraid_sync_file_errors`                 | Number of file errors found during SnapRAID sync. |
+| `snapraid_sync_io_errors`                   | Number of I/O errors found during SnapRAID sync. |
+| `snapraid_sync_data_errors`                 | Number of data errors found during SnapRAID sync. |
+| `snapraid_sync_completion_percent`          | Completion percentage of the SnapRAID sync operation. |
+| `snapraid_sync_accessed_mb`                 | Amount of data accessed during the SnapRAID sync operation, in MB. |
+
 
 
 ## Alerts
