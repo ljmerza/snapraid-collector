@@ -39,7 +39,6 @@ Configure a cron job to run the script periodically and output to a textfile col
 0 3 * * Sun /usr/local/bin/snapraid_metrics_collector.sh scrub > /var/lib/node_exporter/textfile_collector/snapraid_scrub.prom
 # Run snapraid smart every day at 5 AM
 0 5 * * * /usr/local/bin/snapraid_metrics_collector.sh smart > /var/lib/node_exporter/textfile_collector/snapraid_smart.prom
-
 ```
 
 Adjust the cron schedule according to your requirements.
@@ -87,8 +86,6 @@ The script generates the following metrics:
 | `snapraid_sync_data_errors`                 | Number of data errors found during SnapRAID sync. |
 | `snapraid_sync_completion_percent`          | Completion percentage of the SnapRAID sync operation. |
 | `snapraid_sync_accessed_mb`                 | Amount of data accessed during the SnapRAID sync operation, in MB. |
-
-
 
 ## Alerts
 
