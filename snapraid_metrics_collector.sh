@@ -156,7 +156,7 @@ for arg in "$@"; do
       snapraidSmartOutput=$(snapraid smart)
       exitStatus=$?
       echo "$(date)" > smart.log
-      echo "$snapraidSmartOutput" > smart.log
+      echo "$snapraidSmartOutput" >> smart.log
       extract_status_metrics "smart" "$exitStatus"
       extract_snapraid_smart "$snapraidSmartOutput"
       ;;
@@ -164,7 +164,7 @@ for arg in "$@"; do
       snapraidScrubOutput=$(sudo snapraid scrub)
       exitStatus=$?
       echo "$(date)" > scrub.log
-      echo "$snapraidScrubOutput" > scrub.log
+      echo "$snapraidScrubOutput" >> scrub.log
       extract_status_metrics "scrub" "$exitStatus"
       extract_scan_metrics "$snapraidScrubOutput" "scrub"
       extract_error_metrics "$snapraidScrubOutput" "scrub"
@@ -174,7 +174,7 @@ for arg in "$@"; do
       snapraidSyncOutput=$(sudo snapraid --force-zero sync)
       exitStatus=$?
       echo "$(date)" > sync.log
-      echo "$snapraidSyncOutput" > sync.log
+      echo "$snapraidSyncOutput" >> sync.log
       extract_status_metrics "sync" "$exitStatus"
       extract_scan_metrics "$snapraidSyncOutput" "sync"
       extract_error_metrics "$snapraidSyncOutput" "sync"
