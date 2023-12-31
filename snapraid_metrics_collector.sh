@@ -107,8 +107,8 @@ extract_completion_metrics() {
   local metricSuffix="$2"
 
   completedLine=$(echo "$snapraidOutput" | grep "completed");
-  completionPercent=$(echo "$completedLine" | awk '{print $7}' | tr -d '%');
-  accessedMB=$(echo "$completedLine" | awk '{print $9}');
+  completionPercent=$(echo "$completedLine" | awk '{print 1}' | tr -d '%');
+  accessedMB=$(echo "$completedLine" | awk '{print $3}');
 
   echo "# HELP snapraid_${metricSuffix}_completion_percent Completion percentage of the operation during SnapRAID ${metricSuffix}"
   echo "# TYPE snapraid_${metricSuffix}_completion_percent gauge"
