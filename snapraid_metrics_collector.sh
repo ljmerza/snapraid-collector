@@ -23,12 +23,10 @@ extract_status_metrics(){
   echo "# TYPE snapraid_${metricSuffix}_exit_status gauge"
   echo "snapraid_${metricSuffix}_exit_status $exitStatus"
 
-  if [ $exitStatus -eq 0 ]; then
-      currentTimestamp=$(date +%s)
-      echo "# HELP snapraid_${metricSuffix}_last_successful Timestamp of the last successful SnapRAID ${metricSuffix} run"
-      echo "# TYPE snapraid_${metricSuffix}_last_successful gauge"
-      echo "snapraid_${metricSuffix}_last_successful $currentTimestamp"
-  fi
+  currentTimestamp=$(date +%s)
+  echo "# HELP snapraid_${metricSuffix}_last_ran Timestamp of the last SnapRAID ${metricSuffix} run"
+  echo "# TYPE snapraid_${metricSuffix}_last_ran gauge"
+  echo "snapraid_${metricSuffix}_last_ran $currentTimestamp"
 }
 
 extract_snapraid_smart() {

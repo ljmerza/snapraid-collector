@@ -66,12 +66,12 @@ The script generates the following metrics:
 | Metric Name                                 | Description |
 | ------------------------------------------- | ----------- |
 | `snapraid_smart_exit_status`                | Exit status of the last SnapRAID smart run. |
-| `snapraid_smart_last_successful`            | Timestamp of the last successful SnapRAID smart run. |
+| `snapraid_smart_last_ran`            | Timestamp of the last SnapRAID smart run. |
 | `snapraid_smart_disk_fail_probability`      | Fail probability for individual disks within the next year based on SMART values calculated by SnapRAID. |
 | `snapraid_smart_total_fail_probability`     | Fail probability for any disk failing within the next year based on SMART values calculated by SnapRAID. |
 | -                                           | -           |
 | `snapraid_scrub_exit_status`                | Exit status of the last SnapRAID scrub run. |
-| `snapraid_scrub_last_successful`            | Timestamp of the last successful SnapRAID scrub run. |
+| `snapraid_scrub_last_run`            | Timestamp of the last SnapRAID scrub run. |
 | `snapraid_scrub_scan_time_seconds`          | Scan time for each item during SnapRAID scrub operation, in seconds. |
 | `snapraid_scrub_file_errors`                | Number of file errors found during SnapRAID scrub. |
 | `snapraid_scrub_io_errors`                  | Number of I/O errors found during SnapRAID scrub. |
@@ -80,7 +80,7 @@ The script generates the following metrics:
 | `snapraid_scrub_accessed_mb`                | Amount of data accessed during the SnapRAID scrub operation, in MB. |
 | -                                           | -           |
 | `snapraid_sync_exit_status`                 | Exit status of the last SnapRAID sync run. |
-| `snapraid_sync_last_successful`             | Timestamp of the last successful SnapRAID sync run. |
+| `snapraid_sync_last_run`             | Timestamp of the last SnapRAID sync run. |
 | `snapraid_sync_scan_time_seconds`           | Scan time for each item during SnapRAID sync operation, in seconds. |
 | `snapraid_sync_file_errors`                 | Number of file errors found during SnapRAID sync. |
 | `snapraid_sync_io_errors`                   | Number of I/O errors found during SnapRAID sync. |
