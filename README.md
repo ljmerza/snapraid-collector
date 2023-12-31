@@ -2,6 +2,9 @@
 
 This script collects various metrics from SnapRAID operations like `sync`, `scrub`, and `smart` and outputs them in a format compatible with Prometheus's textfile collector.
 
+
+<img src='./grafana.png' width='800' alt='Grafana Dashboard'/>
+
 ## Prerequisites
 
 - SnapRAID installed and configured

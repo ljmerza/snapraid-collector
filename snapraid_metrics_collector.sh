@@ -131,17 +131,23 @@ extract_completion_metrics() {
   local snapraidOutput="$1"
   local metricSuffix="$2"
 
-  completedLine=$(echo "$snapraidOutput" | grep "completed");
-  completionPercent=$(echo "$completedLine" | awk '{print 1}' | tr -d '%');
-  accessedMB=$(echo "$completedLine" | awk '{print $3}');
+  completedLine=$(echo "$snapraidOutput" | grep "completed")
+  completionPercent=$(echo "$completedLine" | awk '{print $1}' | tr -d '%' | grep -oP '^[0-9]+')
+  accessedMB=$(echo "$completedLine" | awk '{print $3}' | grep -oP '^[0-9]+')
 
   echo "# HELP snapraid_${metricSuffix}_completion_percent Completion percentage of the operation during SnapRAID ${metricSuffix}"
   echo "# TYPE snapraid_${metricSuffix}_completion_percent gauge"
-  echo "snapraid_${metricSuffix}_completion_percent $completionPercent"
+  if [[ "$completionPercent" != "" ]]; then
+    echo "snapraid_${metricSuffix}_completion_percent $completionPercent"
+  fi
+
   echo "# HELP snapraid_${metricSuffix}_accessed_mb Amount of data accessed in MB during SnapRAID ${metricSuffix}"
   echo "# TYPE snapraid_${metricSuffix}_accessed_mb gauge"
-  echo "snapraid_${metricSuffix}_accessed_mb $accessedMB"
+  if [[ "$accessedMB" != "" ]]; then
+    echo "snapraid_${metricSuffix}_accessed_mb $accessedMB"
+  fi
 }
+
 
 # Iterate over all arguments
 for arg in "$@"; do
