@@ -73,7 +73,6 @@ The script generates the following metrics:
 | `snapraid_scrub_exit_status`                | Exit status of the last SnapRAID scrub run. |
 | `snapraid_scrub_last_successful`            | Timestamp of the last successful SnapRAID scrub run. |
 | `snapraid_scrub_scan_time_seconds`          | Scan time for each item during SnapRAID scrub operation, in seconds. |
-| `snapraid_scrub_verify_duration`            | Time taken to verify each path during SnapRAID scrub, in seconds. |
 | `snapraid_scrub_file_errors`                | Number of file errors found during SnapRAID scrub. |
 | `snapraid_scrub_io_errors`                  | Number of I/O errors found during SnapRAID scrub. |
 | `snapraid_scrub_data_errors`                | Number of data errors found during SnapRAID scrub. |
@@ -83,7 +82,6 @@ The script generates the following metrics:
 | `snapraid_sync_exit_status`                 | Exit status of the last SnapRAID sync run. |
 | `snapraid_sync_last_successful`             | Timestamp of the last successful SnapRAID sync run. |
 | `snapraid_sync_scan_time_seconds`           | Scan time for each item during SnapRAID sync operation, in seconds. |
-| `snapraid_sync_verify_duration`             | Time taken to verify each path during SnapRAID sync, in seconds. |
 | `snapraid_sync_file_errors`                 | Number of file errors found during SnapRAID sync. |
 | `snapraid_sync_io_errors`                   | Number of I/O errors found during SnapRAID sync. |
 | `snapraid_sync_data_errors`                 | Number of data errors found during SnapRAID sync. |

@@ -78,24 +78,6 @@ extract_scan_metrics() {
   done
 }
 
-extract_base_metrics() {
-  local snapraidOutput="$1"
-  local metricSuffix="$2"
-
-  currentTimestamp=$(date +%s)
-  echo "# HELP snapraid_${metricSuffix}_last_successful Timestamp of the last successful SnapRAID ${metricSuffix}"
-  echo "# TYPE snapraid_${metricSuffix}_last_successful gauge"
-  echo "snapraid_${metricSuffix}_last_successful $currentTimestamp"
-
-  echo "# HELP snapraid_${metricSuffix}_verify_duration Time taken to verify each path in seconds"
-  echo "# TYPE snapraid_${metricSuffix}_verify_duration gauge"
-  echo "$snapraidSyncOutput" | grep "^Verified" | while read -r line; do
-      path=$(echo "$line" | awk '{print $2}')
-      seconds=$(echo "$line" | awk '{print $4}')
-      echo "snapraid_${metricSuffix}_verify_duration{path=\"$path\"} $seconds"
-  done
-}
-
 extract_error_metrics() {
   local snapraidOutput="$1"
   local metricSuffix="$2"
@@ -124,9 +106,9 @@ extract_completion_metrics() {
   local snapraidOutput="$1"
   local metricSuffix="$2"
 
-  completedLine=$(echo "$snapraidOutput" | grep "completed")
-  completionPercent=$(echo "$completedLine" | awk '{print $1}' | tr -d '%')
-  accessedMB=$(echo "$completedLine" | awk -F, '{print $2}' | awk '{print $1}')
+  completedLine=$(echo "$snapraidOutput" | grep "completed");
+  completionPercent=$(echo "$completedLine" | awk '{print $7}' | tr -d '%');
+  accessedMB=$(echo "$completedLine" | awk '{print $9}');
 
   echo "# HELP snapraid_${metricSuffix}_completion_percent Completion percentage of the operation during SnapRAID ${metricSuffix}"
   echo "# TYPE snapraid_${metricSuffix}_completion_percent gauge"
@@ -142,27 +124,25 @@ for arg in "$@"; do
     smart)
       snapraidSmartOutput=$(snapraid smart)
       exitStatus=$?
-      extract_status_metrics "smart" "$exitStatus"
       echo "$snapraidSmartOutput" > smart.log
+      extract_status_metrics "smart" "$exitStatus"
       extract_snapraid_smart "$snapraidSmartOutput"
       ;;
     scrub)
       snapraidScrubOutput=$(sudo snapraid scrub)
       exitStatus=$?
-      extract_status_metrics "scrub" "$exitStatus"
       echo "$snapraidScrubOutput" > scrub.log
+      extract_status_metrics "scrub" "$exitStatus"
       extract_scan_metrics "$snapraidScrubOutput" "scrub"
-      extract_base_metrics "$snapraidScrubOutput" "scrub"
       extract_error_metrics "$snapraidScrubOutput" "scrub"
       extract_completion_metrics "$snapraidScrubOutput" "scrub"
       ;;
     sync)
       snapraidSyncOutput=$(sudo snapraid --force-zero sync)
       exitStatus=$?
-      extract_status_metrics "sync" "$exitStatus"
       echo "$snapraidSyncOutput" > sync.log
+      extract_status_metrics "sync" "$exitStatus"
       extract_scan_metrics "$snapraidSyncOutput" "sync"
-      extract_base_metrics "$snapraidSyncOutput" "sync"
       extract_error_metrics "$snapraidSyncOutput" "sync"
       extract_completion_metrics "$snapraidSyncOutput" "sync"
       ;;
