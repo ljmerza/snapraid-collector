@@ -113,3 +113,7 @@ The script generates the following metrics:
         summary: Snapraid Total Failure on {{ $labels.instance }} - {{ $labels.job }}
         description: "Snapraid Total Failure (current value: {{ $value }})"
 ```
+
+## Logging
+
+The script logs each SnapRAID command to a serperate file in the same directory a the script in `smart.log`, `scrub.log`, and `sync.log` files.
