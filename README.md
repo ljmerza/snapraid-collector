@@ -66,6 +66,9 @@ The script generates the following metrics:
 | ------------------------------------------- | ----------- |
 | `snapraid_smart_exit_status`                | Exit status of the last SnapRAID smart run. |
 | `snapraid_smart_last_ran`            | Timestamp of the last SnapRAID smart run. |
+| `snapraid_smart_disk_temperature` | Disk temperature in degrees Celsius. |
+| `snapraid_smart_disk_power_on_days` | Number of days the disk has been powered on. |
+| `snapraid_smart_disk_error_count` | Number of errors reported by the disk. |
 | `snapraid_smart_disk_fail_probability`      | Fail probability for individual disks within the next year based on SMART values calculated by SnapRAID. |
 | `snapraid_smart_total_fail_probability`     | Fail probability for any disk failing within the next year based on SMART values calculated by SnapRAID. |
 | -                                           | -           |
