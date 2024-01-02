@@ -5,6 +5,8 @@ This script collects various metrics from SnapRAID operations like `sync`, `scru
 
 <img src='./grafana.png' width='800' alt='Grafana Dashboard'/>
 
+You can find this dashboard [here](https://grafana.com/grafana/dashboards/20237-snapraid/)
+
 ## Prerequisites
 
 - SnapRAID installed and configured
