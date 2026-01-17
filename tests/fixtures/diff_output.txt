@@ -1,0 +1,9 @@
+Loading state from /var/snapraid/snapraid.content...
+Comparing...
+
+     1024 equal
+       15 added
+        3 removed
+        8 updated
+        2 moved
+        1 copied

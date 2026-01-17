@@ -1,0 +1,5 @@
+SnapRAID SMART report:
+
+   Temp  Power   Error   FP Size
+      C OnDays   Count        TB  Serial           Device        Disk
+ -----------------------------------------------------------------------

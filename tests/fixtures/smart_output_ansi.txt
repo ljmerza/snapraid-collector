@@ -1,0 +1,13 @@
+SnapRAID SMART report:
+
+   Temp  Power   Error   FP Size
+      C OnDays   Count        TB  Serial           Device        Disk
+ -----------------------------------------------------------------------
+     32    225       0   4% 14.0  SERIAL001        /dev/sda      data01
+[33m     33   1598       0   12% 10.0 SERIAL002        /dev/sdb      data02[0m
+[31m     37   1093    5317  42% 12.0  SERIAL003        /dev/sdc      data03[0m
+      -      -       -    -    -  PLACEHOLDER      /dev/nvme0n1  -
+
+Probability that at least one disk is going to fail in the next year is 34%.
+
+*** WARNING *** Disk data03 reports a high error rate.

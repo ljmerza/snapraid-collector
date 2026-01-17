@@ -1,0 +1,21 @@
+Sun Dec 31 01:17:02 PM EST 2023
+Self test...
+Scanning...
+Scanned data01 in 7 seconds
+Scanned data02 in 19 seconds
+Using 6808 MiB of memory for the file-system.
+Syncing...
+0%, 2 MB
+50%, 8543 MB
+100% completed, 18894 MB accessed in 0:42
+
+     5 updated
+     2 removed
+     0 added
+     0 copied
+     0 restored
+     0 verified
+
+     108 file errors
+       0 io errors
+       0 data errors

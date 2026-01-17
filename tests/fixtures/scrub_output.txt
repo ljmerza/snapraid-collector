@@ -1,0 +1,13 @@
+Scrubbing...
+Scanned data01 in 5 seconds
+Scanned data02 in 8 seconds
+Scanned data03 in 9 seconds
+100% completed, 400 GiB accessed in 1:23:45
+
+      4 scrubbed
+      0 verified
+      0 updated
+
+       0 file errors
+       0 io errors
+       1 data errors

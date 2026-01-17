@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+FIXTURE_DIR="$PROJECT_ROOT/tests/fixtures"
+
+COMMAND="$1"
+shift || true
+
+if [[ "${FAKE_SNAPRAID_FAIL:-}" == "$COMMAND" ]]; then
+  >&2 echo "Simulated failure for $COMMAND"
+  exit 1
+fi
+
+# Allow overriding the exit code (e.g., 2 for diff sync required)
+EXIT_CODE="${FAKE_SNAPRAID_EXIT:-0}"
+
+# Allow overriding the fixture path
+get_fixture() {
+  local cmd="$1"
+  local default_fixture="$FIXTURE_DIR/${cmd}_output.txt"
+  echo "${FAKE_SNAPRAID_FIXTURE:-$default_fixture}"
+}
+
+case "$COMMAND" in
+  smart)
+    cat "$(get_fixture smart)"
+    ;;
+  scrub)
+    cat "$(get_fixture scrub)"
+    ;;
+  sync)
+    cat "$(get_fixture sync)"
+    ;;
+  diff)
+    cat "$(get_fixture diff)"
+    exit "${FAKE_SNAPRAID_EXIT:-0}"
+    ;;
+  status)
+    cat "$(get_fixture status)"
+    ;;
+  *)
+    >&2 echo "Unsupported fake snapraid command: $COMMAND"
+    exit 1
+    ;;
+esac
+
+exit "$EXIT_CODE"

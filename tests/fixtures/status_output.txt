@@ -1,0 +1,12 @@
+SnapRAID status report:
+
+   Files Fragmented Excess  Wasted  Used    Free  Use Name
+            /MB     /MB     /GB     /GB     /GB
+   12543       45      12    0.2   1234     789  61% data01
+    8927       23       8    0.1    987     456  68% data02
+
+The oldest block was scrubbed 45 days ago, the median 23 days ago, the newest 2 days ago.
+
+The 15% of the array is unscrubbed.
+
+You have 1.2% fragmented content.
