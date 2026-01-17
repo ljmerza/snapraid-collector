@@ -1,0 +1,16 @@
+[Unit]
+Description=SnapRAID Metrics Collector Export
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+Environment=SNAPRAID_BIN=/usr/bin/snapraid
+Environment=SNAPRAID_COLLECTOR_SKIP_ROOT=false
+ExecStart=/usr/local/bin/snapraid_metrics_collector.sh \
+  --textfile /var/lib/node_exporter/textfile_collector/snapraid.prom \
+  smart scrub sync
+TimeoutStartSec=1h
+
+[Install]
+WantedBy=multi-user.target

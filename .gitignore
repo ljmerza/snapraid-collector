@@ -1,5 +1,3 @@
-smart.log
-sync.log
-scrub.log
-
-test.sh
+logs/
+tests/tmp/
+*.prom
