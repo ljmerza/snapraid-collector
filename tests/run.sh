@@ -162,6 +162,11 @@ unset FAKE_SNAPRAID_FIXTURE
 assert_contains "$empty_metrics" 'snapraid_smart_exit_status 0' "Empty output: exit status present"
 assert_contains "$empty_metrics" 'snapraid_smart_warning_count 0' "Empty output: warning count is 0"
 
+# --skip-info flag suppresses collector_info metric
+skip_info_metrics=$(run_collector --skip-info smart)
+assert_not_contains "$skip_info_metrics" 'snapraid_collector_info' "Skip-info: collector_info metric absent"
+assert_contains "$skip_info_metrics" 'snapraid_smart_total_fail_probability' "Skip-info: command metrics still present"
+
 # Timeout flag passes through (just check it doesn't crash)
 timeout_textfile=$(mktemp "$TMP_DIR/timeout.XXXXXX.prom")
 if SNAPRAID_COLLECTOR_SKIP_ROOT=true "$COLLECTOR" \

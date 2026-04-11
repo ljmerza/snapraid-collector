@@ -22,6 +22,7 @@ Options:
   --redact-identifiers        Redact disk identifiers in metric labels
   --timeout SECONDS           Timeout for each snapraid command (0 = disabled)
   --debug                     Print parsed values to stderr before metric emission
+  --skip-info                 Suppress snapraid_collector_info metric (for multi-file deployments)
   --smart-defaults "ARGS"     Default arguments appended to `snapraid smart`
   --scrub-defaults "ARGS"     Default arguments appended to `snapraid scrub`
   --sync-defaults "ARGS"      Default arguments appended to `snapraid sync`
@@ -48,6 +49,7 @@ TEXTFILE_PATH=""
 DRY_RUN=false
 VERBOSE=false
 DEBUG=false
+SKIP_INFO=false
 TIMEOUT=${SNAPRAID_TIMEOUT:-0}
 REDACT_IDENTIFIERS=${SNAPRAID_COLLECTOR_REDACT:-false}
 SNAPRAID_BIN=${SNAPRAID_BIN:-snapraid}
@@ -832,6 +834,10 @@ parse_arguments() {
         DEBUG=true
         shift
         ;;
+      --skip-info)
+        SKIP_INFO=true
+        shift
+        ;;
       --version)
         echo "snapraid_metrics_collector $COLLECTOR_VERSION"
         exit 0
@@ -883,9 +889,11 @@ main() {
   check_root_requirement
   require_snapraid_binary
 
-  emit_metric "# HELP snapraid_collector_info Collector version information"
-  emit_metric "# TYPE snapraid_collector_info gauge"
-  emit_metric "snapraid_collector_info{version=\"$COLLECTOR_VERSION\"} 1"
+  if [[ $SKIP_INFO != true ]]; then
+    emit_metric "# HELP snapraid_collector_info Collector version information"
+    emit_metric "# TYPE snapraid_collector_info gauge"
+    emit_metric "snapraid_collector_info{version=\"$COLLECTOR_VERSION\"} 1"
+  fi
 
   local args=("${remaining_args[@]}")
   local arg_count=${#args[@]}
