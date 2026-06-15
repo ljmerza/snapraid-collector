@@ -738,6 +738,9 @@ write_textfile_if_needed() {
   local tmp_target
   tmp_target=$(mktemp "$textfile_dir/$(basename "$TEXTFILE_PATH").XXXXXX") || exit 1
   printf '%s' "$metrics_buffer" > "$tmp_target"
+  # mktemp creates the file 0600; node_exporter runs unprivileged and must be
+  # able to read it, so widen to world-readable before the atomic rename.
+  chmod 0644 "$tmp_target"
   mv "$tmp_target" "$TEXTFILE_PATH"
 }
 
