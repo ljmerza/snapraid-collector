@@ -26,7 +26,7 @@ run_collector() {
     --snapraid-bin "$FAKE_SNAPRAID" \
     --log-dir "$LOG_DIR" \
     --textfile "$textfile" \
-    "$@" >/dev/null 2>&1
+    "$@" > /dev/null 2>&1
   cat "$textfile"
 }
 
@@ -45,7 +45,7 @@ assert_contains() {
   local haystack="$1"
   local needle="$2"
   local message="$3"
-  if ! grep -qE "$needle" <<<"$haystack"; then
+  if ! grep -qE "$needle" <<< "$haystack"; then
     echo "Assertion failed: $message" >&2
     echo "Expected pattern: $needle" >&2
     ((failures++))
@@ -56,7 +56,7 @@ assert_not_contains() {
   local haystack="$1"
   local needle="$2"
   local message="$3"
-  if grep -qE "$needle" <<<"$haystack"; then
+  if grep -qE "$needle" <<< "$haystack"; then
     echo "Assertion failed: $message" >&2
     echo "Did not expect pattern: $needle" >&2
     ((failures++))
@@ -65,7 +65,7 @@ assert_not_contains() {
 
 # Version metric
 version_output=$(run_collector smart)
-assert_contains "$version_output" 'snapraid_collector_info\{version="1\.1\.0"\} 1' "Version info metric"
+assert_contains "$version_output" 'snapraid_collector_info\{version="1\.1\.1"\} 1' "Version info metric"
 
 # Smart metrics
 smart_metrics=$(run_collector smart)
@@ -101,7 +101,7 @@ SNAPRAID_COLLECTOR_SKIP_ROOT=true FAKE_SNAPRAID_EXIT=2 "$COLLECTOR" \
   --snapraid-bin "$FAKE_SNAPRAID" \
   --log-dir "$LOG_DIR" \
   --textfile "$diff_sync_textfile" \
-  diff >/dev/null 2>&1
+  diff > /dev/null 2>&1
 diff_sync_result=$?
 diff_sync_metrics=$(cat "$diff_sync_textfile")
 assert_contains "$diff_sync_metrics" 'snapraid_diff_sync_required 1' "Diff sync required (exit 2)"
@@ -129,7 +129,7 @@ SNAPRAID_COLLECTOR_SKIP_ROOT=true "$COLLECTOR" \
   --log-dir "$LOG_DIR" \
   --textfile "$redact_textfile" \
   --redact-identifiers \
-  smart >/dev/null 2>&1
+  smart > /dev/null 2>&1
 redact_metrics=$(cat "$redact_textfile")
 assert_contains "$redact_metrics" 'disk="redacted_' "Redaction: disk label contains redacted_ prefix"
 assert_contains "$redact_metrics" 'serial="redacted_' "Redaction: serial label contains redacted_ prefix"
@@ -143,7 +143,7 @@ SNAPRAID_COLLECTOR_SKIP_ROOT=true "$COLLECTOR" \
   --snapraid-bin "$FAKE_SNAPRAID" \
   --log-dir "$LOG_DIR" \
   --textfile "$ansi_textfile" \
-  smart >/dev/null 2>&1
+  smart > /dev/null 2>&1
 ansi_metrics=$(cat "$ansi_textfile")
 unset FAKE_SNAPRAID_FIXTURE
 assert_contains "$ansi_metrics" 'snapraid_smart_disk_fail_probability\{.*disk="data03".*\} 42' "ANSI: parses correctly with escape codes"
@@ -156,7 +156,7 @@ SNAPRAID_COLLECTOR_SKIP_ROOT=true "$COLLECTOR" \
   --snapraid-bin "$FAKE_SNAPRAID" \
   --log-dir "$LOG_DIR" \
   --textfile "$empty_textfile" \
-  smart >/dev/null 2>&1
+  smart > /dev/null 2>&1
 empty_metrics=$(cat "$empty_textfile")
 unset FAKE_SNAPRAID_FIXTURE
 assert_contains "$empty_metrics" 'snapraid_smart_exit_status 0' "Empty output: exit status present"
@@ -174,7 +174,7 @@ if SNAPRAID_COLLECTOR_SKIP_ROOT=true "$COLLECTOR" \
   --log-dir "$LOG_DIR" \
   --textfile "$timeout_textfile" \
   --timeout 60 \
-  smart >/dev/null 2>&1; then
+  smart > /dev/null 2>&1; then
   : # success
 else
   echo "Assertion failed: --timeout flag should not cause crash" >&2
@@ -182,16 +182,16 @@ else
 fi
 
 # Failure propagation
-if SNAPRAID_COLLECTOR_SKIP_ROOT=true FAKE_SNAPRAID_FAIL=scrub "$COLLECTOR" --snapraid-bin "$FAKE_SNAPRAID" --log-dir "$LOG_DIR" scrub >/dev/null 2>&1; then
+if SNAPRAID_COLLECTOR_SKIP_ROOT=true FAKE_SNAPRAID_FAIL=scrub "$COLLECTOR" --snapraid-bin "$FAKE_SNAPRAID" --log-dir "$LOG_DIR" scrub > /dev/null 2>&1; then
   echo "Assertion failed: scrub failure should propagate exit code" >&2
   ((failures++))
 fi
 
 # Version flag test
 version_output=$("$COLLECTOR" --version 2>&1)
-assert_contains "$version_output" 'snapraid_metrics_collector 1\.1\.0' "Version flag output"
+assert_contains "$version_output" 'snapraid_metrics_collector 1\.1\.1' "Version flag output"
 
-if (( failures > 0 )); then
+if ((failures > 0)); then
   echo "Tests failed: $failures failing assertion(s)." >&2
   exit 1
 fi
