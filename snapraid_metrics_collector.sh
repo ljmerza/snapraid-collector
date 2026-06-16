@@ -68,6 +68,9 @@ metrics_buffer=""
 TEMP_DIR=""
 
 cleanup() {
+  # Invoked only via the EXIT trap below; shellcheck can't trace trap handlers
+  # and flags this as unreachable (SC2317). Silence that false positive.
+  # shellcheck disable=SC2317
   [[ -n "$TEMP_DIR" && -d "$TEMP_DIR" ]] && rm -rf "$TEMP_DIR"
 }
 trap cleanup EXIT
