@@ -3,7 +3,7 @@
 set -o pipefail
 
 usage() {
-  cat <<'EOF'
+  cat << 'EOF'
 Usage: snapraid_metrics_collector.sh [options] command [args] [command [args] ...]
 
 Commands:
@@ -43,7 +43,7 @@ subsequent tokens to be treated as arguments rather than command keywords.
 EOF
 }
 
-COLLECTOR_VERSION="1.1.0"
+COLLECTOR_VERSION="1.1.1"
 
 TEXTFILE_PATH=""
 DRY_RUN=false
@@ -68,6 +68,9 @@ metrics_buffer=""
 TEMP_DIR=""
 
 cleanup() {
+  # Invoked only via the EXIT trap below; shellcheck can't trace trap handlers
+  # and flags this as unreachable (SC2317). Silence that false positive.
+  # shellcheck disable=SC2317
   [[ -n "$TEMP_DIR" && -d "$TEMP_DIR" ]] && rm -rf "$TEMP_DIR"
 }
 trap cleanup EXIT
@@ -161,7 +164,7 @@ require_snapraid_binary() {
   if [[ $DRY_RUN == true ]]; then
     return
   fi
-  if ! command -v "$SNAPRAID_BIN" >/dev/null 2>&1; then
+  if ! command -v "$SNAPRAID_BIN" > /dev/null 2>&1; then
     echo "Error: Could not find snapraid binary at '$SNAPRAID_BIN' or in PATH" >&2
     exit 1
   fi
@@ -236,26 +239,32 @@ normalize_size_to_bytes() {
   local multiplier=1
   case "$unit" in
     B) multiplier=1 ;;
-    kB|KB) multiplier=1000 ;;
-    K|KiB) multiplier=1024 ;;
-    MB) multiplier=1000
-        multiplier=$((multiplier * 1000))
-        ;;
-    M|MiB) multiplier=1024
-           multiplier=$((multiplier * 1024))
-           ;;
-    GB) multiplier=1000
-        multiplier=$((multiplier * 1000 * 1000))
-        ;;
-    G|GiB) multiplier=1024
-           multiplier=$((multiplier * 1024 * 1024))
-           ;;
-    TB) multiplier=1000
-        multiplier=$((multiplier * 1000 * 1000 * 1000))
-        ;;
-    T|TiB) multiplier=1024
-           multiplier=$((multiplier * 1024 * 1024 * 1024))
-           ;;
+    kB | KB) multiplier=1000 ;;
+    K | KiB) multiplier=1024 ;;
+    MB)
+      multiplier=1000
+      multiplier=$((multiplier * 1000))
+      ;;
+    M | MiB)
+      multiplier=1024
+      multiplier=$((multiplier * 1024))
+      ;;
+    GB)
+      multiplier=1000
+      multiplier=$((multiplier * 1000 * 1000))
+      ;;
+    G | GiB)
+      multiplier=1024
+      multiplier=$((multiplier * 1024 * 1024))
+      ;;
+    TB)
+      multiplier=1000
+      multiplier=$((multiplier * 1000 * 1000 * 1000))
+      ;;
+    T | TiB)
+      multiplier=1024
+      multiplier=$((multiplier * 1024 * 1024 * 1024))
+      ;;
     *) multiplier=1 ;;
   esac
 
@@ -276,11 +285,11 @@ parse_duration_to_seconds() {
   IFS=':' read -r -a parts <<< "$duration_string"
   local count=${#parts[@]}
 
-  if (( count == 2 )); then
+  if ((count == 2)); then
     local minutes=${parts[0]}
     local seconds=${parts[1]}
     awk -v m="$minutes" -v s="$seconds" 'BEGIN { printf "%.0f", (m * 60) + s }'
-  elif (( count == 3 )); then
+  elif ((count == 3)); then
     local hours=${parts[0]}
     local minutes=${parts[1]}
     local seconds=${parts[2]}
@@ -595,7 +604,7 @@ extract_status_metrics() {
 
 is_snapraid_command() {
   case "$1" in
-    smart|scrub|sync|diff|status)
+    smart | scrub | sync | diff | status)
       return 0
       ;;
     *)
@@ -626,7 +635,7 @@ run_snapraid_command() {
     cmd_prefix=(timeout "$TIMEOUT")
   fi
 
-  if "${cmd_prefix[@]}" "$SNAPRAID_BIN" "$subcommand" "${subargs[@]}" >"$stdout_file" 2>"$stderr_file"; then
+  if "${cmd_prefix[@]}" "$SNAPRAID_BIN" "$subcommand" "${subargs[@]}" > "$stdout_file" 2> "$stderr_file"; then
     status=0
   else
     status=$?
@@ -662,7 +671,7 @@ handle_command() {
 
   local command_line
   command_line="$SNAPRAID_BIN $command"
-  if (( ${#combined_args[@]} > 0 )); then
+  if ((${#combined_args[@]} > 0)); then
     command_line+=" $(format_command_args "${combined_args[@]}")"
   fi
 
@@ -738,16 +747,19 @@ write_textfile_if_needed() {
   local tmp_target
   tmp_target=$(mktemp "$textfile_dir/$(basename "$TEXTFILE_PATH").XXXXXX") || exit 1
   printf '%s' "$metrics_buffer" > "$tmp_target"
+  # mktemp creates the file 0600; node_exporter runs unprivileged and must be
+  # able to read it, so widen to world-readable before the atomic rename.
+  chmod 0644 "$tmp_target"
   mv "$tmp_target" "$TEXTFILE_PATH"
 }
 
 parse_arguments() {
   declare -a positionals=()
 
-  while (( $# > 0 )); do
+  while (($# > 0)); do
     case "$1" in
       --textfile)
-        if (( $# < 2 )); then
+        if (($# < 2)); then
           echo "Error: --textfile requires a path argument" >&2
           exit 1
         fi
@@ -755,7 +767,7 @@ parse_arguments() {
         shift 2
         ;;
       --snapraid-bin)
-        if (( $# < 2 )); then
+        if (($# < 2)); then
           echo "Error: --snapraid-bin requires a path argument" >&2
           exit 1
         fi
@@ -763,7 +775,7 @@ parse_arguments() {
         shift 2
         ;;
       --log-dir)
-        if (( $# < 2 )); then
+        if (($# < 2)); then
           echo "Error: --log-dir requires a path argument" >&2
           exit 1
         fi
@@ -783,7 +795,7 @@ parse_arguments() {
         shift
         ;;
       --smart-defaults)
-        if (( $# < 2 )); then
+        if (($# < 2)); then
           echo "Error: --smart-defaults requires an argument string" >&2
           exit 1
         fi
@@ -791,7 +803,7 @@ parse_arguments() {
         shift 2
         ;;
       --scrub-defaults)
-        if (( $# < 2 )); then
+        if (($# < 2)); then
           echo "Error: --scrub-defaults requires an argument string" >&2
           exit 1
         fi
@@ -799,7 +811,7 @@ parse_arguments() {
         shift 2
         ;;
       --sync-defaults)
-        if (( $# < 2 )); then
+        if (($# < 2)); then
           echo "Error: --sync-defaults requires an argument string" >&2
           exit 1
         fi
@@ -807,7 +819,7 @@ parse_arguments() {
         shift 2
         ;;
       --diff-defaults)
-        if (( $# < 2 )); then
+        if (($# < 2)); then
           echo "Error: --diff-defaults requires an argument string" >&2
           exit 1
         fi
@@ -815,7 +827,7 @@ parse_arguments() {
         shift 2
         ;;
       --status-defaults)
-        if (( $# < 2 )); then
+        if (($# < 2)); then
           echo "Error: --status-defaults requires an argument string" >&2
           exit 1
         fi
@@ -823,7 +835,7 @@ parse_arguments() {
         shift 2
         ;;
       --timeout)
-        if (( $# < 2 )); then
+        if (($# < 2)); then
           echo "Error: --timeout requires a number of seconds" >&2
           exit 1
         fi
@@ -842,13 +854,13 @@ parse_arguments() {
         echo "snapraid_metrics_collector $COLLECTOR_VERSION"
         exit 0
         ;;
-      --help|-h)
+      --help | -h)
         usage
         exit 0
         ;;
       --)
         shift
-        while (( $# > 0 )); do
+        while (($# > 0)); do
           positionals+=("$1")
           shift
         done
@@ -861,7 +873,7 @@ parse_arguments() {
     esac
   done
 
-  if (( ${#positionals[@]} == 0 )); then
+  if ((${#positionals[@]} == 0)); then
     usage
     exit 1
   fi
@@ -900,17 +912,17 @@ main() {
   local index=0
   local overall_status=0
 
-  while (( index < arg_count )); do
+  while ((index < arg_count)); do
     local token="${args[$index]}"
     ((index++))
 
     if is_snapraid_command "$token"; then
       local -a command_args=()
-      while (( index < arg_count )); do
+      while ((index < arg_count)); do
         local next_token="${args[$index]}"
         if [[ $next_token == "--" ]]; then
           ((index++))
-          while (( index < arg_count )); do
+          while ((index < arg_count)); do
             command_args+=("${args[$index]}")
             ((index++))
           done
