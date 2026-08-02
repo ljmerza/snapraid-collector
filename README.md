@@ -224,9 +224,8 @@ Example alerting rules:
 
 Import the Grafana dashboard (`grafana.png`) or roll your own against the expanded metric set.
 
-<<<<<<< HEAD
 The script logs each SnapRAID command to a serperate file in the same directory a the script in `smart.log`, `scrub.log`, and `sync.log` files.
-=======
+
 ---
 
 ### Development & Testing
@@ -260,7 +259,6 @@ make lint        # shellcheck + shfmt (no-op if tools missing)
 - Alternate implementation in Go/Python for long-running daemon scenarios.
 
 Contributions, bug reports, and sample SnapRAID outputs that break the parser are always welcome.
->>>>>>> 178acb3 (add project infrastructure: CI, Docker, Makefile, docs)
 
 ---
 
