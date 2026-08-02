@@ -224,7 +224,11 @@ Example alerting rules:
 
 Import the Grafana dashboard (`grafana.png`) or roll your own against the expanded metric set.
 
-The script logs each SnapRAID command to a serperate file in the same directory a the script in `smart.log`, `scrub.log`, and `sync.log` files.
+Each invocation writes a timestamped log to `./logs` — override with `--log-dir PATH` or `SNAPRAID_LOG_DIR`. For a given command (`smart`, `scrub`, `sync`, `diff`, `status`) you get:
+
+- `<log-dir>/<command>-<YYYYMMDDThhmmss>.log` — the log for that run.
+- `<log-dir>/<command>.latest.log` — symlink to the newest run of that command.
+- `./<command>.log` — symlink in the working directory, so `smart.log`, `scrub.log`, and `sync.log` always point at the latest run.
 
 ---
 
