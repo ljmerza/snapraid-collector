@@ -261,3 +261,9 @@ make lint        # shellcheck + shfmt (no-op if tools missing)
 
 Contributions, bug reports, and sample SnapRAID outputs that break the parser are always welcome.
 >>>>>>> 178acb3 (add project infrastructure: CI, Docker, Makefile, docs)
+
+---
+
+Enjoy my work? Help me out for a couple of :beers: or a :coffee:!
+
+<a href="https://www.buymeacoffee.com/JMISm06AD"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="41" width="174"></a>
