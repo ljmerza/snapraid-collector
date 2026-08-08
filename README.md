@@ -1,5 +1,16 @@
 ## SnapRAID Metrics Collector
 
+<p align="center">
+<img src="https://img.shields.io/github/stars/ljmerza/snapraid-collector?style=for-the-badge&label=Stars&color=orange" alt="Stars">
+<a href="https://github.com/ljmerza/snapraid-collector/releases/latest"><img src="https://img.shields.io/github/v/release/ljmerza/snapraid-collector?style=for-the-badge&color=purple" alt="Version"></a>
+<a href="https://github.com/ljmerza/snapraid-collector/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ljmerza/snapraid-collector/ci.yml?style=for-the-badge&label=CI" alt="CI"></a>
+<a href="https://github.com/ljmerza/snapraid-collector/blob/main/LICENSE"><img src="https://img.shields.io/github/license/ljmerza/snapraid-collector?style=for-the-badge&label=License&color=green" alt="License"></a>
+</p>
+
+<p align="center">
+<a href="https://www.buymeacoffee.com/JMISm06AD"><img src="https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me A Coffee"></a>
+</p>
+
 SnapRAID's built-in reports are great for humans but tricky to scrape. This collector wraps the native `snapraid` CLI, parses the important bits from `smart`, `scrub`, and `sync`, and emits Prometheus-compatible metrics via the node-exporter textfile collector.
 
 ```
@@ -263,9 +274,3 @@ make lint        # shellcheck + shfmt (no-op if tools missing)
 - Alternate implementation in Go/Python for long-running daemon scenarios.
 
 Contributions, bug reports, and sample SnapRAID outputs that break the parser are always welcome.
-
----
-
-Enjoy my work? Help me out for a couple of :beers: or a :coffee:!
-
-<a href="https://www.buymeacoffee.com/JMISm06AD"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="41" width="174"></a>
